@@ -9,6 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from src.models import SessionLocal
 from src.utils.db_helpers import add_rider, add_race, add_race_result, get_rider_by_name, get_race_by_name
+from src.utils.race_templates import RaceTemplates
 from src.services.rating_engine import RatingEngine
 from config.settings import settings
 
@@ -63,6 +64,32 @@ with tab1:
 with tab2:
     st.subheader("Add New Race")
 
+    # Template selector
+    st.write("**Quick Start: Use a Template**")
+    template_names = ["Custom (Manual)"] + list(RaceTemplates.get_all_templates().keys())
+    selected_template = st.selectbox(
+        "Choose a race template or create custom",
+        options=template_names,
+        help="Templates provide predefined characteristics for common race types"
+    )
+
+    # Initialize default values
+    if selected_template == "Custom (Manual)":
+        default_chars = {
+            'flat_weight': 0.0,
+            'cobbles_weight': 0.0,
+            'mountain_weight': 0.0,
+            'time_trial_weight': 0.0,
+            'sprint_weight': 0.0,
+            'gc_weight': 0.0,
+            'one_day_weight': 0.0,
+            'endurance_weight': 0.0
+        }
+    else:
+        default_chars = RaceTemplates.get_template(selected_template)
+
+    st.markdown("---")
+
     with st.form("add_race_form"):
         race_name = st.text_input("Race Name*", placeholder="e.g., Tour de France - Stage 1")
         col1, col2 = st.columns(2)
@@ -77,20 +104,20 @@ with tab2:
 
         with col2:
             st.write("**Race Characteristics** (0.0 to 1.0)")
-            flat_weight = st.slider("Flat", 0.0, 1.0, 0.0, 0.1)
-            cobbles_weight = st.slider("Cobbles", 0.0, 1.0, 0.0, 0.1)
-            mountain_weight = st.slider("Mountain", 0.0, 1.0, 0.0, 0.1)
-            time_trial_weight = st.slider("Time Trial", 0.0, 1.0, 0.0, 0.1)
+            flat_weight = st.slider("Flat", 0.0, 1.0, float(default_chars['flat_weight']), 0.1)
+            cobbles_weight = st.slider("Cobbles", 0.0, 1.0, float(default_chars['cobbles_weight']), 0.1)
+            mountain_weight = st.slider("Mountain", 0.0, 1.0, float(default_chars['mountain_weight']), 0.1)
+            time_trial_weight = st.slider("Time Trial", 0.0, 1.0, float(default_chars['time_trial_weight']), 0.1)
 
         col3, col4 = st.columns(2)
 
         with col3:
-            sprint_weight = st.slider("Sprint", 0.0, 1.0, 0.0, 0.1)
-            gc_weight = st.slider("GC", 0.0, 1.0, 0.0, 0.1)
+            sprint_weight = st.slider("Sprint", 0.0, 1.0, float(default_chars['sprint_weight']), 0.1)
+            gc_weight = st.slider("GC", 0.0, 1.0, float(default_chars['gc_weight']), 0.1)
 
         with col4:
-            one_day_weight = st.slider("One Day", 0.0, 1.0, 0.0, 0.1)
-            endurance_weight = st.slider("Endurance", 0.0, 1.0, 0.0, 0.1)
+            one_day_weight = st.slider("One Day", 0.0, 1.0, float(default_chars['one_day_weight']), 0.1)
+            endurance_weight = st.slider("Endurance", 0.0, 1.0, float(default_chars['endurance_weight']), 0.1)
 
         submitted_race = st.form_submit_button("Add Race")
 

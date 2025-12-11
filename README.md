@@ -1,6 +1,13 @@
 # 🚴 Cycling Rating System
 
-A comprehensive professional cycling rating and analysis system built with Python and Streamlit. This application tracks and rates professional cyclists across multiple performance dimensions using an advanced ELO-like algorithm, similar to Pro Cycling Manager.
+A comprehensive professional cycling rating and analysis system. This application tracks and rates professional cyclists across multiple performance dimensions using an advanced ELO-like algorithm, similar to Pro Cycling Manager.
+
+## 🆕 Version 2.0 - Now with GitHub Pages Support!
+
+The system has been completely rebuilt with a modern architecture:
+- **Frontend**: React + Vite + Tailwind CSS (deployed on GitHub Pages)
+- **Backend**: Supabase (PostgreSQL + REST API + Edge Functions)
+- **Legacy**: Python/Streamlit version still available for local development
 
 ![Python](https://img.shields.io/badge/python-3.9+-blue.svg)
 ![Streamlit](https://img.shields.io/badge/streamlit-1.31+-red.svg)
@@ -32,61 +39,118 @@ A comprehensive professional cycling rating and analysis system built with Pytho
 
 ## 📋 Table of Contents
 
-- [Installation](#-installation)
-- [Quick Start](#-quick-start)
-- [Usage Guide](#-usage-guide)
+- [Quick Start (Web Version)](#-quick-start-web-version)
+- [Supabase Setup](#-supabase-setup)
+- [Local Development](#-local-development)
+- [Legacy Streamlit Version](#-legacy-streamlit-version)
 - [Rating System](#-rating-system)
 - [Project Structure](#-project-structure)
-- [Cloud Deployment](#-cloud-deployment)
-- [Development](#-development)
 
-## 🚀 Installation
+## 🚀 Quick Start (Web Version)
+
+### Prerequisites
+
+- Node.js 18+
+- A Supabase account (free tier works great)
+
+### Step 1: Clone and Install
+
+```bash
+git clone <repository-url>
+cd CyclingModelization/frontend
+npm install
+```
+
+### Step 2: Set Up Supabase
+
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Go to **SQL Editor** and run the migrations in `supabase/migrations/` (in order)
+3. Go to **Settings → API** and copy your URL and anon key
+
+### Step 3: Configure Environment
+
+```bash
+cp .env.example .env
+# Edit .env with your Supabase credentials:
+# VITE_SUPABASE_URL=https://your-project.supabase.co
+# VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+### Step 4: Run the App
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:5173` in your browser!
+
+## 🗄️ Supabase Setup
+
+### Running Migrations
+
+In the Supabase SQL Editor, run these files in order:
+
+1. `supabase/migrations/001_initial_schema.sql` - Creates all tables
+2. `supabase/migrations/002_sample_data.sql` - Adds sample riders and races
+
+### Deploy Edge Function (Optional)
+
+For automatic rating calculations, deploy the edge function:
+
+```bash
+# Install Supabase CLI
+npm install -g supabase
+
+# Login and link your project
+supabase login
+supabase link --project-ref your-project-ref
+
+# Deploy the function
+supabase functions deploy update-ratings
+```
+
+### GitHub Pages Deployment
+
+1. Enable GitHub Pages in your repo settings (Settings → Pages → Source: GitHub Actions)
+2. Add secrets to your repository:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+3. Push to `main` branch - deployment is automatic!
+
+## 💻 Local Development
+
+### Frontend Development
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Building for Production
+
+```bash
+npm run build
+```
+
+## 🐍 Legacy Streamlit Version
+
+The original Python/Streamlit version is still available for local-only use:
 
 ### Prerequisites
 
 - Python 3.9 or higher
 - pip package manager
-- Git (optional)
 
-### Step 1: Clone the Repository
-
-```bash
-git clone <repository-url>
-cd CyclingModelization
-```
-
-### Step 2: Create a Virtual Environment
+### Installation
 
 ```bash
-# On Linux/Mac
 python -m venv venv
-source venv/bin/activate
-
-# On Windows
-python -m venv venv
-venv\Scripts\activate
-```
-
-### Step 3: Install Dependencies
-
-```bash
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### Step 4: Initialize the Database
-
-```bash
-# Option 1: Start with empty database
-streamlit run app.py
-# The database will be created automatically on first run
-
-# Option 2: Initialize with sample data
-python scripts/init_sample_data.py
-```
-
-## 🏁 Quick Start
-
-### Running the Application
+### Running
 
 ```bash
 streamlit run app.py

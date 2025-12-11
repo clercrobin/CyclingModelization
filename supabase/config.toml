@@ -1,0 +1,41 @@
+# Supabase configuration for Cycling Rating System
+# A string used to distinguish different Supabase projects on the same host
+project_id = "cycling-rating-system"
+
+[api]
+# Port to use for the API URL
+port = 54321
+# Schemas to expose in your API
+schemas = ["public"]
+# Extra schemas to add to the search_path of every request
+extra_search_path = ["public"]
+# The maximum number of rows returns from a view, table, or stored procedure
+max_rows = 1000
+
+[db]
+# Port to use for the local database URL
+port = 54322
+# The database major version to use
+major_version = 15
+
+[studio]
+# Port to use for Supabase Studio
+port = 54323
+
+[storage]
+# The maximum file size allowed (in bytes)
+file_size_limit = "50MiB"
+
+[auth]
+# The base URL of your website
+site_url = "http://localhost:5173"
+# A list of *exact* URLs that auth providers are permitted to redirect to post authentication
+additional_redirect_urls = ["https://localhost:5173"]
+# How long tokens are valid for, in seconds
+jwt_expiry = 3600
+# Allow/disallow new user signups to your project
+enable_signup = true
+
+[functions]
+# Enable or disable functions
+enabled = true

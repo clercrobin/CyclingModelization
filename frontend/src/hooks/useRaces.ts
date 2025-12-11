@@ -71,19 +71,15 @@ export function useAddRace() {
 
       if (raceError) throw raceError
 
-      // Insert characteristics
+      // Insert characteristics with new field names
       const { error: charError } = await supabase
         .from('race_characteristics')
         .insert({
           race_id: (newRace as { id: number }).id,
-          flat_weight: race.characteristics.flat_weight ?? 0,
-          cobbles_weight: race.characteristics.cobbles_weight ?? 0,
-          mountain_weight: race.characteristics.mountain_weight ?? 0,
-          time_trial_weight: race.characteristics.time_trial_weight ?? 0,
-          sprint_weight: race.characteristics.sprint_weight ?? 0,
-          gc_weight: race.characteristics.gc_weight ?? 0,
-          one_day_weight: race.characteristics.one_day_weight ?? 0,
-          endurance_weight: race.characteristics.endurance_weight ?? 0,
+          terrain_flat_weight: race.characteristics.terrain_flat_weight ?? 0,
+          terrain_cobbles_weight: race.characteristics.terrain_cobbles_weight ?? 0,
+          terrain_long_climbs_weight: race.characteristics.terrain_long_climbs_weight ?? 0,
+          race_sprint_finish_weight: race.characteristics.race_sprint_finish_weight ?? 0,
           distance_km: race.characteristics.distance_km,
           elevation_gain_m: race.characteristics.elevation_gain_m
         })
@@ -154,86 +150,60 @@ export function useUpdateRatings() {
   })
 }
 
-// Race templates
+// Race templates with updated field names
 export const RACE_TEMPLATES: Record<string, Partial<RaceCharacteristics>> = {
   'Paris-Roubaix': {
-    flat_weight: 0.6,
-    cobbles_weight: 1.0,
-    mountain_weight: 0.0,
-    time_trial_weight: 0.0,
-    sprint_weight: 0.3,
-    gc_weight: 0.0,
-    one_day_weight: 1.0,
-    endurance_weight: 0.8
+    terrain_flat_weight: 0.6,
+    terrain_cobbles_weight: 1.0,
+    terrain_long_climbs_weight: 0.0,
+    race_sprint_finish_weight: 0.3,
+    power_endurance_2h_weight: 0.8
   },
   'Tour of Flanders': {
-    flat_weight: 0.4,
-    cobbles_weight: 0.8,
-    mountain_weight: 0.3,
-    time_trial_weight: 0.0,
-    sprint_weight: 0.4,
-    gc_weight: 0.0,
-    one_day_weight: 1.0,
-    endurance_weight: 0.7
+    terrain_flat_weight: 0.4,
+    terrain_cobbles_weight: 0.8,
+    terrain_punch_climbs_weight: 0.6,
+    race_sprint_finish_weight: 0.4,
+    power_endurance_2h_weight: 0.7
   },
   'Mountain Stage': {
-    flat_weight: 0.2,
-    cobbles_weight: 0.0,
-    mountain_weight: 1.0,
-    time_trial_weight: 0.0,
-    sprint_weight: 0.1,
-    gc_weight: 0.7,
-    one_day_weight: 0.0,
-    endurance_weight: 0.9
+    terrain_flat_weight: 0.2,
+    terrain_long_climbs_weight: 1.0,
+    terrain_altitude_weight: 0.8,
+    race_sprint_finish_weight: 0.1,
+    power_endurance_2h_weight: 0.9
   },
   'Flat Sprint Stage': {
-    flat_weight: 1.0,
-    cobbles_weight: 0.0,
-    mountain_weight: 0.0,
-    time_trial_weight: 0.0,
-    sprint_weight: 1.0,
-    gc_weight: 0.2,
-    one_day_weight: 0.0,
-    endurance_weight: 0.5
+    terrain_flat_weight: 1.0,
+    terrain_long_climbs_weight: 0.0,
+    race_sprint_finish_weight: 1.0,
+    power_sprint_5s_weight: 0.9,
+    power_endurance_2h_weight: 0.5
   },
   'Individual Time Trial': {
-    flat_weight: 0.5,
-    cobbles_weight: 0.0,
-    mountain_weight: 0.0,
-    time_trial_weight: 1.0,
-    sprint_weight: 0.0,
-    gc_weight: 0.5,
-    one_day_weight: 0.0,
-    endurance_weight: 0.6
+    terrain_flat_weight: 0.7,
+    terrain_rolling_weight: 0.5,
+    power_threshold_20m_weight: 0.9,
+    power_ftp_60m_weight: 1.0
   },
   'Milano-Sanremo': {
-    flat_weight: 0.7,
-    cobbles_weight: 0.0,
-    mountain_weight: 0.2,
-    time_trial_weight: 0.0,
-    sprint_weight: 0.8,
-    gc_weight: 0.0,
-    one_day_weight: 1.0,
-    endurance_weight: 0.9
+    terrain_flat_weight: 0.7,
+    terrain_punch_climbs_weight: 0.5,
+    race_sprint_finish_weight: 0.8,
+    power_endurance_2h_weight: 0.9
   },
   'Liege-Bastogne-Liege': {
-    flat_weight: 0.3,
-    cobbles_weight: 0.0,
-    mountain_weight: 0.7,
-    time_trial_weight: 0.0,
-    sprint_weight: 0.4,
-    gc_weight: 0.0,
-    one_day_weight: 1.0,
-    endurance_weight: 0.8
+    terrain_rolling_weight: 0.7,
+    terrain_punch_climbs_weight: 0.9,
+    terrain_medium_climbs_weight: 0.6,
+    power_vo2max_5m_weight: 0.8,
+    power_endurance_2h_weight: 0.8
   },
   'Il Lombardia': {
-    flat_weight: 0.2,
-    cobbles_weight: 0.0,
-    mountain_weight: 0.8,
-    time_trial_weight: 0.0,
-    sprint_weight: 0.3,
-    gc_weight: 0.0,
-    one_day_weight: 1.0,
-    endurance_weight: 0.7
+    terrain_medium_climbs_weight: 0.8,
+    terrain_long_climbs_weight: 0.5,
+    terrain_descending_weight: 0.7,
+    race_sprint_finish_weight: 0.4,
+    power_endurance_2h_weight: 0.7
   }
 }

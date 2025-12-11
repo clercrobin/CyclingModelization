@@ -1,14 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../lib/supabase'
-import type { Rider, RiderRating, RatingHistory } from '../types/database'
-
-export type RatingDimension = 'overall' | 'flat' | 'cobbles' | 'mountain' | 'time_trial' | 'sprint' | 'gc' | 'one_day' | 'endurance'
+import type { Rider, RiderRating, RatingHistory, RatingDimensionKey } from '../types/database'
 
 export interface RiderWithRating {
   id: number
   name: string
   team: string | null
   country: string | null
+  country_code: string | null
   rating: number
   overall: number
   races: number
@@ -17,7 +16,7 @@ export interface RiderWithRating {
   ratings?: RiderRating
 }
 
-export function useTopRiders(dimension: RatingDimension = 'overall', limit: number = 50) {
+export function useTopRiders(dimension: RatingDimensionKey = 'overall', limit: number = 50) {
   return useQuery({
     queryKey: ['topRiders', dimension, limit],
     queryFn: async (): Promise<RiderWithRating[]> => {
@@ -28,20 +27,8 @@ export function useTopRiders(dimension: RatingDimension = 'overall', limit: numb
           name,
           team,
           country,
-          rider_ratings (
-            flat,
-            cobbles,
-            mountain,
-            time_trial,
-            sprint,
-            gc,
-            one_day,
-            endurance,
-            overall,
-            races_count,
-            wins_count,
-            podiums_count
-          )
+          country_code,
+          rider_ratings (*)
         `)
         .not('rider_ratings', 'is', null)
         .order(`rider_ratings(${dimension})`, { ascending: false })
@@ -55,6 +42,7 @@ export function useTopRiders(dimension: RatingDimension = 'overall', limit: numb
         name: rider.name,
         team: rider.team,
         country: rider.country,
+        country_code: rider.country_code,
         rating: rider.rider_ratings?.[dimension] ?? 1500,
         overall: rider.rider_ratings?.overall ?? 1500,
         races: rider.rider_ratings?.races_count ?? 0,
@@ -136,34 +124,28 @@ export function useAddRider() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (rider: { name: string; team?: string; country?: string }) => {
+    mutationFn: async (rider: { name: string; team?: string; country?: string; country_code?: string }) => {
       // Insert rider
       const { data: newRider, error: riderError } = await supabase
         .from('riders')
-        .insert({ name: rider.name, team: rider.team, country: rider.country })
+        .insert({
+          name: rider.name,
+          team: rider.team,
+          country: rider.country,
+          country_code: rider.country_code
+        })
         .select()
         .single()
 
       if (riderError) throw riderError
 
-      // Initialize ratings
+      // Initialize ratings with defaults (database defaults handle this)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { error: ratingError } = await supabase
         .from('rider_ratings')
         .insert({
-          rider_id: (newRider as { id: number }).id,
-          flat: 1500,
-          cobbles: 1500,
-          mountain: 1500,
-          time_trial: 1500,
-          sprint: 1500,
-          gc: 1500,
-          one_day: 1500,
-          endurance: 1500,
-          overall: 1500,
-          races_count: 0,
-          wins_count: 0,
-          podiums_count: 0
+          rider_id: (newRider as { id: number }).id
+          // All other fields will use database defaults (1500)
         })
 
       if (ratingError) throw ratingError
@@ -174,5 +156,26 @@ export function useAddRider() {
       queryClient.invalidateQueries({ queryKey: ['allRiders'] })
       queryClient.invalidateQueries({ queryKey: ['topRiders'] })
     }
+  })
+}
+
+// Search riders
+export function useSearchRiders(query: string) {
+  return useQuery({
+    queryKey: ['searchRiders', query],
+    queryFn: async (): Promise<Rider[]> => {
+      if (!query || query.length < 2) return []
+
+      const { data, error } = await supabase
+        .from('riders')
+        .select('*')
+        .ilike('name', `%${query}%`)
+        .order('name')
+        .limit(20)
+
+      if (error) throw error
+      return (data || []) as Rider[]
+    },
+    enabled: query.length >= 2
   })
 }

@@ -15,6 +15,15 @@ const categories: { value: RaceCategory; label: string }[] = [
   { value: 'Others', label: 'Others' }
 ]
 
+const CHARACTERISTIC_FIELDS = [
+  { key: 'terrain_flat_weight', label: 'Flat' },
+  { key: 'terrain_cobbles_weight', label: 'Cobbles' },
+  { key: 'terrain_long_climbs_weight', label: 'Climbing' },
+  { key: 'race_sprint_finish_weight', label: 'Sprint' },
+  { key: 'power_threshold_20m_weight', label: 'TT' },
+  { key: 'power_endurance_2h_weight', label: 'Endurance' }
+] as const
+
 export function ManageData() {
   const [activeTab, setActiveTab] = useState<TabType>('riders')
 
@@ -149,14 +158,12 @@ function AddRaceForm() {
   const [country, setCountry] = useState('')
   const [template, setTemplate] = useState('')
   const [characteristics, setCharacteristics] = useState<Partial<RaceCharacteristics>>({
-    flat_weight: 0,
-    cobbles_weight: 0,
-    mountain_weight: 0,
-    time_trial_weight: 0,
-    sprint_weight: 0,
-    gc_weight: 0,
-    one_day_weight: 0,
-    endurance_weight: 0
+    terrain_flat_weight: 0,
+    terrain_cobbles_weight: 0,
+    terrain_long_climbs_weight: 0,
+    race_sprint_finish_weight: 0,
+    power_threshold_20m_weight: 0,
+    power_endurance_2h_weight: 0
   })
   const [success, setSuccess] = useState(false)
 
@@ -185,14 +192,12 @@ function AddRaceForm() {
       setCountry('')
       setTemplate('')
       setCharacteristics({
-        flat_weight: 0,
-        cobbles_weight: 0,
-        mountain_weight: 0,
-        time_trial_weight: 0,
-        sprint_weight: 0,
-        gc_weight: 0,
-        one_day_weight: 0,
-        endurance_weight: 0
+        terrain_flat_weight: 0,
+        terrain_cobbles_weight: 0,
+        terrain_long_climbs_weight: 0,
+        race_sprint_finish_weight: 0,
+        power_threshold_20m_weight: 0,
+        power_endurance_2h_weight: 0
       })
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
@@ -284,33 +289,31 @@ function AddRaceForm() {
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Race Characteristics
         </label>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {(['flat', 'cobbles', 'mountain', 'time_trial', 'sprint', 'gc', 'one_day', 'endurance'] as const).map(
-            (dim) => (
-              <div key={dim}>
-                <label className="block text-xs text-gray-500 mb-1 capitalize">
-                  {dim.replace('_', ' ')}
-                </label>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.1"
-                  value={characteristics[`${dim}_weight` as keyof RaceCharacteristics] || 0}
-                  onChange={(e) =>
-                    setCharacteristics({
-                      ...characteristics,
-                      [`${dim}_weight`]: parseFloat(e.target.value)
-                    })
-                  }
-                  className="w-full"
-                />
-                <div className="text-xs text-center text-gray-600">
-                  {characteristics[`${dim}_weight` as keyof RaceCharacteristics] || 0}
-                </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {CHARACTERISTIC_FIELDS.map((field) => (
+            <div key={field.key}>
+              <label className="block text-xs text-gray-500 mb-1">
+                {field.label}
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                value={(characteristics[field.key as keyof RaceCharacteristics] as number) || 0}
+                onChange={(e) =>
+                  setCharacteristics({
+                    ...characteristics,
+                    [field.key]: parseFloat(e.target.value)
+                  })
+                }
+                className="w-full"
+              />
+              <div className="text-xs text-center text-gray-600">
+                {(characteristics[field.key as keyof RaceCharacteristics] as number) || 0}
               </div>
-            )
-          )}
+            </div>
+          ))}
         </div>
       </div>
 
@@ -516,8 +519,9 @@ function UpdateRatingsForm() {
       await updateRatings.mutateAsync(selectedRaceId)
       setSuccess(true)
       setTimeout(() => setSuccess(false), 5000)
-    } catch (err: any) {
-      setError(err.message || 'Failed to update ratings')
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update ratings'
+      setError(errorMessage)
     }
   }
 

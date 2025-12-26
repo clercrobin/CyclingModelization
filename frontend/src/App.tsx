@@ -6,6 +6,7 @@ import { Rankings } from './pages/Rankings'
 import { RiderProfile } from './pages/RiderProfile'
 import { ManageData } from './pages/ManageData'
 import { Analytics } from './pages/Analytics'
+import { NotFound } from './pages/NotFound'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,8 +29,10 @@ function App() {
             <Route index element={<Home />} />
             <Route path="rankings" element={<Rankings />} />
             <Route path="rider" element={<RiderProfile />} />
+            <Route path="rider/:id" element={<RiderProfile />} />
             <Route path="manage" element={<ManageData />} />
             <Route path="analytics" element={<Analytics />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </BrowserRouter>

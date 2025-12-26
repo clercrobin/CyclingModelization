@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import { useAllRiders, useRider, useRiderHistory } from '../hooks/useRiders'
 import {
   Radar,
@@ -18,7 +19,15 @@ import {
 import { User, Trophy, Calendar, TrendingUp } from 'lucide-react'
 
 export function RiderProfile() {
+  const { id } = useParams<{ id: string }>()
   const [selectedRiderId, setSelectedRiderId] = useState<number | null>(null)
+
+  // Sync URL param with state
+  useEffect(() => {
+    if (id) {
+      setSelectedRiderId(Number(id))
+    }
+  }, [id])
 
   const { data: allRiders, isLoading: ridersLoading } = useAllRiders()
   const { data: rider, isLoading: riderLoading } = useRider(selectedRiderId)

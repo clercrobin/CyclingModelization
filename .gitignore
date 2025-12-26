@@ -70,3 +70,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 temp/
+
+# Supabase temp files
+supabase/.temp/
+*.zip

@@ -36,6 +36,11 @@ jwt_expiry = 3600
 # Allow/disallow new user signups to your project
 enable_signup = true
 
-[functions]
-# Enable or disable functions
-enabled = true
+[functions.update-ratings]
+verify_jwt = false
+
+[functions.analyze-text]
+verify_jwt = false
+
+[functions.batch-import]
+verify_jwt = false

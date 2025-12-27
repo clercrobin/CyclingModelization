@@ -33,16 +33,31 @@ export function RiderProfile() {
   const { data: rider, isLoading: riderLoading } = useRider(selectedRiderId)
   const { data: history } = useRiderHistory(selectedRiderId)
 
+  // Profile scores radar - aggregated dimension scores
   const radarData = rider?.rider_ratings
     ? [
-        { dimension: 'Flat', value: rider.rider_ratings.flat, fullMark: 2500 },
-        { dimension: 'Cobbles', value: rider.rider_ratings.cobbles, fullMark: 2500 },
-        { dimension: 'Mountain', value: rider.rider_ratings.mountain, fullMark: 2500 },
-        { dimension: 'Time Trial', value: rider.rider_ratings.time_trial, fullMark: 2500 },
-        { dimension: 'Sprint', value: rider.rider_ratings.sprint, fullMark: 2500 },
-        { dimension: 'GC', value: rider.rider_ratings.gc, fullMark: 2500 },
-        { dimension: 'One Day', value: rider.rider_ratings.one_day, fullMark: 2500 },
-        { dimension: 'Endurance', value: rider.rider_ratings.endurance, fullMark: 2500 }
+        { dimension: 'Sprinter', value: rider.rider_ratings.profile_sprinter || 1500, fullMark: 2500 },
+        { dimension: 'Climber', value: rider.rider_ratings.profile_climber || 1500, fullMark: 2500 },
+        { dimension: 'Puncheur', value: rider.rider_ratings.profile_puncheur || 1500, fullMark: 2500 },
+        { dimension: 'Rouleur', value: rider.rider_ratings.profile_rouleur || 1500, fullMark: 2500 },
+        { dimension: 'Time Trial', value: rider.rider_ratings.profile_timetrialist || 1500, fullMark: 2500 },
+        { dimension: 'GC', value: rider.rider_ratings.profile_gc || 1500, fullMark: 2500 },
+        { dimension: 'Classics', value: rider.rider_ratings.profile_classics || 1500, fullMark: 2500 },
+        { dimension: 'All-Rounder', value: rider.rider_ratings.profile_allrounder || 1500, fullMark: 2500 }
+      ]
+    : []
+
+  // Detailed dimension breakdown
+  const detailedRatings = rider?.rider_ratings
+    ? [
+        { dimension: 'Flat Terrain', value: rider.rider_ratings.terrain_flat || 1500 },
+        { dimension: 'Cobbles', value: rider.rider_ratings.terrain_cobbles || 1500 },
+        { dimension: 'Long Climbs', value: rider.rider_ratings.terrain_long_climbs || 1500 },
+        { dimension: 'TT Flat', value: rider.rider_ratings.race_itt_flat || 1500 },
+        { dimension: 'Sprint Finish', value: rider.rider_ratings.race_sprint_finish || 1500 },
+        { dimension: 'GC Racing', value: rider.rider_ratings.race_gc || 1500 },
+        { dimension: 'One Day', value: rider.rider_ratings.race_oneday || 1500 },
+        { dimension: 'Endurance', value: rider.rider_ratings.physical_fatigue_resist || 1500 }
       ]
     : []
 
@@ -174,10 +189,10 @@ export function RiderProfile() {
           {/* Rating Details */}
           <div className="bg-white rounded-xl shadow-sm border p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Rating Breakdown
+              Detailed Ratings
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {radarData.map((item) => (
+              {detailedRatings.map((item) => (
                 <div key={item.dimension} className="bg-gray-50 rounded-lg p-4">
                   <div className="text-sm text-gray-500">{item.dimension}</div>
                   <div className="text-xl font-bold text-gray-900">{item.value}</div>

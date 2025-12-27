@@ -115,7 +115,7 @@ export function useDimensionCorrelation() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('rider_ratings')
-        .select('flat, cobbles, mountain, time_trial, sprint, gc, one_day, endurance')
+        .select('profile_sprinter, profile_climber, profile_puncheur, profile_rouleur, profile_timetrialist, profile_gc, profile_classics, profile_allrounder')
 
       if (error) throw error
 
@@ -123,12 +123,21 @@ export function useDimensionCorrelation() {
       const ratings = (data || []) as any[]
       if (ratings.length === 0) return []
 
-      // Calculate average for each dimension
-      const dimensions = ['flat', 'cobbles', 'mountain', 'time_trial', 'sprint', 'gc', 'one_day', 'endurance']
+      // Calculate average for each profile dimension
+      const dimensions = [
+        { key: 'profile_sprinter', label: 'Sprinter' },
+        { key: 'profile_climber', label: 'Climber' },
+        { key: 'profile_puncheur', label: 'Puncheur' },
+        { key: 'profile_rouleur', label: 'Rouleur' },
+        { key: 'profile_timetrialist', label: 'Time Trial' },
+        { key: 'profile_gc', label: 'GC' },
+        { key: 'profile_classics', label: 'Classics' },
+        { key: 'profile_allrounder', label: 'All-Rounder' }
+      ]
 
       return dimensions.map(dim => ({
-        dimension: dim.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        average: Math.round(ratings.reduce((sum, r) => sum + (r[dim] || 1500), 0) / ratings.length)
+        dimension: dim.label,
+        average: Math.round(ratings.reduce((sum, r) => sum + (r[dim.key] || 1500), 0) / ratings.length)
       }))
     }
   })
